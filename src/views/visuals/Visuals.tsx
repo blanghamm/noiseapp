@@ -2,27 +2,23 @@ import React, { Suspense, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { Shadow, Text } from '@react-three/drei';
+import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
 import { Background } from './Styles';
-
-const imagesArray = [
-  { url: 'unfriended.jpg', pos: [0, 0, 0] },
-  { url: 'trump.jpg', pos: [10, 0, 0] },
-  { url: 'fear-fury.jpg', pos: [20, 0, 0] },
-];
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
   const mesh = useRef<THREE.Mesh>(null!);
   const [active, activeSet] = useState(false);
   const [hover, hoverSet] = useState(false);
+  const props = useSpring({ scale: hover ? 1.5 : 1 });
   return (
     <>
-      <group
+      <a.group
+        {...props}
         position={position}
         onClick={() => activeSet(!active)}
-        scale={hover ? 1.5 : 1}
         onPointerOver={() => hoverSet(true)}
         onPointerOut={() => hoverSet(false)}
       >
@@ -39,7 +35,7 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
         </mesh>
 
         <Shadow
-          scale={[2.7 * 1.5, 1, 1]}
+          scale={[2.7 * 1.2, 1, 1]}
           rotation={[0.75, 0, 0]}
           position={[0, -2.5, 0]}
           opacity={0.3}
@@ -55,7 +51,7 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
           Hello there
           <meshBasicMaterial color='black' toneMapped={false} />
         </Text> */}
-      </group>
+      </a.group>
     </>
   );
 };
