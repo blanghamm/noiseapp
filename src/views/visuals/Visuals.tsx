@@ -1,7 +1,17 @@
-import React, { Suspense, useState, useRef } from 'react';
+//@ts-nocheck
+
+import React, {
+  Suspense,
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  createRef,
+  Children,
+} from 'react';
 import * as THREE from 'three';
-import { Canvas, useLoader } from '@react-three/fiber';
-import { Shadow, Text } from '@react-three/drei';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Shadow } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
@@ -40,18 +50,63 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
           position={[0, -2.5, 0]}
           opacity={0.3}
         />
-        {/* <Text
-          anchorX='left'
-          position={[0, 0, 0]}
-          scale={0.5}
-          fontSize={8}
-          maxWidth={200}
-          textAlign={'left'}
-        >
-          Hello there
-          <meshBasicMaterial color='black' toneMapped={false} />
-        </Text> */}
       </a.group>
+    </>
+  );
+};
+
+const Fragments = (): JSX.Element => {
+  const [video] = useState(() => {
+    const vid = document.createElement('video');
+    vid.src = '/test.mp4';
+    vid.crossOrigin = 'Anonymous';
+    vid.loop = true;
+    vid.muted = true;
+    return vid;
+  });
+  const data = new Array(500)
+    .fill(500)
+    .map(() => [1 + Math.random() * 9, 2 + Math.random() * 9, 1]);
+  useEffect(() => void video.play(), [video]);
+  return (
+    <>
+      {data.map((d, index) => (
+        <mesh key={index} position={d}>
+          <sphereGeometry args={[0.1, 20, 20]} />
+          <meshStandardMaterial />
+        </mesh>
+      ))}
+      <mesh position={[1, 1, 1]}>
+        <planeBufferGeometry args={[4.8, 2.7]} />
+        <meshBasicMaterial color='white'>
+          <videoTexture attach='map' args={[video]} />
+        </meshBasicMaterial>
+      </mesh>
+    </>
+  );
+};
+
+const Thing = forwardRef((props, ref) => {
+  return (
+    <mesh ref={ref}>
+      <sphereBufferGeometry args={[0.5, 10, 10]} />
+      <meshBasicMaterial />
+    </mesh>
+  );
+});
+
+const Rig = ({ children }): JSX.Element => {
+  const mesh = useRef();
+  useFrame(({ camera }) => {
+    camera.position.set(
+      mesh.current.position.x,
+      mesh.current.position.y,
+      camera.position.z
+    );
+  });
+  return (
+    <>
+      <Thing ref={mesh} />
     </>
   );
 };
@@ -68,10 +123,12 @@ const Visuals = (): JSX.Element => {
         <ambientLight intensity={0.8} />
         <pointLight position={[-10, 10, 10]} />
         <Suspense fallback={null}>
+          {/* <Fragments /> */}
           <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
           <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
           <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} />
         </Suspense>
+        <Rig />
       </Canvas>
     </Background>
   );
