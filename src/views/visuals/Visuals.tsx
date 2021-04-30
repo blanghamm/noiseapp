@@ -7,10 +7,10 @@ import React, {
   useEffect,
   forwardRef,
   createRef,
-  Children,
+  useMemo,
 } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Shadow } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
@@ -55,58 +55,79 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   );
 };
 
-const Fragments = (): JSX.Element => {
-  const [video] = useState(() => {
-    const vid = document.createElement('video');
-    vid.src = '/test.mp4';
-    vid.crossOrigin = 'Anonymous';
-    vid.loop = true;
-    vid.muted = true;
-    return vid;
-  });
-  const data = new Array(500)
-    .fill(500)
-    .map(() => [1 + Math.random() * 9, 2 + Math.random() * 9, 1]);
-  useEffect(() => void video.play(), [video]);
-  return (
-    <>
-      {data.map((d, index) => (
-        <mesh key={index} position={d}>
-          <sphereGeometry args={[0.1, 20, 20]} />
-          <meshStandardMaterial />
-        </mesh>
-      ))}
-      <mesh position={[1, 1, 1]}>
+const Fragments = forwardRef(
+  ({ handleSelection }, ref): JSX.Element => {
+    const data = useMemo(
+      () =>
+        new Array(50)
+          .fill(50)
+          .map(() => [0.1 + Math.random() * 9, 2 + Math.random() * 9, 1]),
+      []
+    );
+    const [video] = useState(() => {
+      const vid = document.createElement('video');
+      vid.src = '/test.mp4';
+      vid.crossOrigin = 'Anonymous';
+      vid.loop = true;
+      vid.muted = true;
+      return vid;
+    });
+    console.log(ref);
+    const { viewport } = useThree();
+
+    useEffect(() => void video.play(), [video]);
+    return (
+      <>
+        {data.map((d, index) => (
+          <mesh
+            key={index}
+            position={d}
+            ref={ref[index]}
+            onClick={() => handleSelection(ref[index])}
+          >
+            <sphereGeometry args={[0.1, 20, 20]} />
+            <meshStandardMaterial />
+          </mesh>
+        ))}
+        {/* <mesh position={[1, 1, 1]}>
         <planeBufferGeometry args={[4.8, 2.7]} />
         <meshBasicMaterial color='white'>
           <videoTexture attach='map' args={[video]} />
         </meshBasicMaterial>
-      </mesh>
-    </>
-  );
-};
+      </mesh> */}
+      </>
+    );
+  }
+);
 
-const Thing = forwardRef((props, ref) => {
-  return (
-    <mesh ref={ref}>
-      <sphereBufferGeometry args={[0.5, 10, 10]} />
-      <meshBasicMaterial />
-    </mesh>
-  );
-});
-
-const Rig = ({ children }): JSX.Element => {
-  const mesh = useRef();
+const Scene = (): JSX.Element => {
+  const [selection, selectionSet] = useState();
+  const handleSelection = (input) => {
+    selectionSet(input);
+  };
+  const [fragRef, fragRefSet] = useState([]);
+  useEffect(() => {
+    fragRefSet((fragRef) =>
+      Array(50)
+        .fill()
+        .map((_, i) => fragRef[i] || createRef())
+    );
+  }, []);
   useFrame(({ camera }) => {
     camera.position.set(
-      mesh.current.position.x,
-      mesh.current.position.y,
+      selection ? selection.current.position.x : null,
+      selection ? selection.current.position.y : null,
       camera.position.z
     );
   });
   return (
     <>
-      <Thing ref={mesh} />
+      <Suspense fallback={null}>
+        {/* <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
+        <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
+        <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} /> */}
+        <Fragments ref={fragRef} handleSelection={handleSelection} />
+      </Suspense>
     </>
   );
 };
@@ -122,13 +143,7 @@ const Visuals = (): JSX.Element => {
       >
         <ambientLight intensity={0.8} />
         <pointLight position={[-10, 10, 10]} />
-        <Suspense fallback={null}>
-          {/* <Fragments /> */}
-          <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
-          <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
-          <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} />
-        </Suspense>
-        <Rig />
+        <Scene />
       </Canvas>
     </Background>
   );
