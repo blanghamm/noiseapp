@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
-import { Shadow } from '@react-three/drei';
+import { Shadow, OrbitControls } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
@@ -61,7 +61,7 @@ const Fragments = forwardRef(
       () =>
         new Array(50)
           .fill(50)
-          .map(() => [0.1 + Math.random() * 9, 2 + Math.random() * 9, 1]),
+          .map(() => [0.1 + Math.random() * 9, 2 + Math.random() * 9, 200]),
       []
     );
     const [video] = useState(() => {
@@ -72,9 +72,6 @@ const Fragments = forwardRef(
       vid.muted = true;
       return vid;
     });
-    console.log(ref);
-    const { viewport } = useThree();
-
     useEffect(() => void video.play(), [video]);
     return (
       <>
@@ -85,7 +82,7 @@ const Fragments = forwardRef(
             ref={ref[index]}
             onClick={() => handleSelection(ref[index])}
           >
-            <sphereGeometry args={[0.1, 20, 20]} />
+            <sphereGeometry args={[0.1, 20, 0]} />
             <meshStandardMaterial />
           </mesh>
         ))}
@@ -100,6 +97,39 @@ const Fragments = forwardRef(
   }
 );
 
+function UnusedNodes({ count = 4000 }) {
+  const positions = useMemo(() => {
+    let positions = [];
+    for (let i = 0; i < count; i++) {
+      const r = 4000;
+      const theta = 2 * Math.PI * Math.random();
+      const phi = Math.acos(2 * Math.random() - 1);
+      const x =
+        r * Math.cos(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
+      const y =
+        r * Math.sin(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
+      const z = -700;
+      positions.push(x);
+      positions.push(y);
+      positions.push(z);
+    }
+    return new Float32Array(positions);
+  }, [count]);
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute
+          attachObject={['attributes', 'position']}
+          count={positions.length / 3}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial size={3} sizeAttenuation color='white' fog={false} />
+    </points>
+  );
+}
+
 const Scene = (): JSX.Element => {
   const [selection, selectionSet] = useState();
   const handleSelection = (input) => {
@@ -113,20 +143,18 @@ const Scene = (): JSX.Element => {
         .map((_, i) => fragRef[i] || createRef())
     );
   }, []);
-  useFrame(({ camera }) => {
-    camera.position.set(
-      selection ? selection.current.position.x : null,
-      selection ? selection.current.position.y : null,
-      camera.position.z
-    );
-  });
+  // useFrame(({ camera }) => {});
   return (
     <>
       <Suspense fallback={null}>
-        {/* <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
-        <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
-        <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} /> */}
+        <group position={[0, 0, 0]}>
+          <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
+          <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
+          <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} />
+        </group>
         <Fragments ref={fragRef} handleSelection={handleSelection} />
+        <UnusedNodes />
+        <OrbitControls />
       </Suspense>
     </>
   );
@@ -136,10 +164,14 @@ const Visuals = (): JSX.Element => {
   return (
     <Background>
       <Canvas
-        orthographic
         dpr={[1, 1.5]}
         mode='concurrent'
-        camera={{ zoom: 100, position: [0, 0, 200] }}
+        camera={{
+          position: [0, 0, 200],
+          fov: 120,
+          near: 0.1,
+          far: 1000,
+        }}
       >
         <ambientLight intensity={0.8} />
         <pointLight position={[-10, 10, 10]} />
