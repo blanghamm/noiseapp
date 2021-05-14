@@ -16,6 +16,7 @@ import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
 import { Background } from './Styles';
+import Model from '../model';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -148,9 +149,9 @@ const Scene = (): JSX.Element => {
     <>
       <Suspense fallback={null}>
         <group position={[0, 0, 0]}>
-          <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 0]} />
-          <Cover imageURL={'trump.jpg'} position={[0, 0, 0]} />
-          <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 0]} />
+          <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 100]} />
+          <Cover imageURL={'trump.jpg'} position={[0, 0, 100]} />
+          <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 100]} />
         </group>
         <Fragments ref={fragRef} handleSelection={handleSelection} />
         <UnusedNodes />
@@ -167,7 +168,7 @@ const Visuals = (): JSX.Element => {
         dpr={[1, 1.5]}
         mode='concurrent'
         camera={{
-          position: [0, 0, 200],
+          position: [0, 0, 100],
           fov: 120,
           near: 0.1,
           far: 1000,
@@ -175,7 +176,9 @@ const Visuals = (): JSX.Element => {
       >
         <ambientLight intensity={0.8} />
         <pointLight position={[-10, 10, 10]} />
-        <Scene />
+        {/* <Scene /> */}
+        <Model />
+        <OrbitControls />
       </Canvas>
     </Background>
   );
