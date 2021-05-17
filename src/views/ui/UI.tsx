@@ -1,7 +1,15 @@
 import React from 'react';
 
-const UI = (): JSX.Element => {
-  return <div></div>;
+interface UITypes {
+  handleReturn: () => void;
+}
+
+const UI = ({ handleReturn }: UITypes): JSX.Element => {
+  return (
+    <div>
+      <button onClick={() => handleReturn()}>GO BACK</button>
+    </div>
+  );
 };
 
 export default UI;

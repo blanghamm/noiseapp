@@ -10,13 +10,19 @@ import React, {
   useMemo,
 } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
-import { Shadow, OrbitControls } from '@react-three/drei';
+import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
+import {
+  Shadow,
+  OrbitControls,
+  useHelper,
+  PerspectiveCamera,
+} from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
 import { Background } from './Styles';
-import Model from '../model';
+import Fragments from '../fragments';
+import UI from '../ui';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -56,48 +62,6 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   );
 };
 
-const Fragments = forwardRef(
-  ({ handleSelection }, ref): JSX.Element => {
-    const data = useMemo(
-      () =>
-        new Array(50)
-          .fill(50)
-          .map(() => [0.1 + Math.random() * 9, 2 + Math.random() * 9, 200]),
-      []
-    );
-    const [video] = useState(() => {
-      const vid = document.createElement('video');
-      vid.src = '/test.mp4';
-      vid.crossOrigin = 'Anonymous';
-      vid.loop = true;
-      vid.muted = true;
-      return vid;
-    });
-    useEffect(() => void video.play(), [video]);
-    return (
-      <>
-        {data.map((d, index) => (
-          <mesh
-            key={index}
-            position={d}
-            ref={ref[index]}
-            onClick={() => handleSelection(ref[index])}
-          >
-            <sphereGeometry args={[0.1, 20, 0]} />
-            <meshStandardMaterial />
-          </mesh>
-        ))}
-        {/* <mesh position={[1, 1, 1]}>
-        <planeBufferGeometry args={[4.8, 2.7]} />
-        <meshBasicMaterial color='white'>
-          <videoTexture attach='map' args={[video]} />
-        </meshBasicMaterial>
-      </mesh> */}
-      </>
-    );
-  }
-);
-
 function UnusedNodes({ count = 4000 }) {
   const positions = useMemo(() => {
     let positions = [];
@@ -131,11 +95,28 @@ function UnusedNodes({ count = 4000 }) {
   );
 }
 
-const Scene = (): JSX.Element => {
+const Camera = () => {
+  const camera = useRef();
+  useHelper(camera, THREE.CameraHelper, 1, 'cyan');
+  return (
+    <PerspectiveCamera
+      makeDefault={true}
+      fov={75}
+      position={[0, 0, 50]}
+      ref={camera}
+    >
+      <meshBasicMaterial />
+    </PerspectiveCamera>
+  );
+};
+
+const Scene = ({ reset }): JSX.Element => {
+  const vec = new THREE.Vector3();
   const [selection, selectionSet] = useState();
   const handleSelection = (input) => {
     selectionSet(input);
   };
+  const focus = -10;
   const [fragRef, fragRefSet] = useState([]);
   useEffect(() => {
     fragRefSet((fragRef) =>
@@ -144,42 +125,54 @@ const Scene = (): JSX.Element => {
         .map((_, i) => fragRef[i] || createRef())
     );
   }, []);
-  // useFrame(({ camera }) => {});
+  useFrame(({ camera }) => {
+    reset
+      ? camera.position.lerp(vec.set(0, 0, 0), 0.1)
+      : camera.position.lerp(
+          vec.set(
+            selection ? selection.current.position.x : 0,
+            selection ? selection.current.position.y : 0,
+            selection ? focus : 0
+          ),
+          0.1
+        );
+  });
   return (
     <>
       <Suspense fallback={null}>
-        <group position={[0, 0, 0]}>
+        <Camera />
+        {/* <group position={[0, 0, 0]}>
           <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 100]} />
           <Cover imageURL={'trump.jpg'} position={[0, 0, 100]} />
           <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 100]} />
-        </group>
+        </group> */}
         <Fragments ref={fragRef} handleSelection={handleSelection} />
-        <UnusedNodes />
-        <OrbitControls />
+        {/* <OrbitControls /> */}
       </Suspense>
     </>
   );
 };
 
 const Visuals = (): JSX.Element => {
+  const [reset, resetSet] = useState(false);
+  const handleReturn = () => {
+    resetSet(true);
+  };
   return (
     <Background>
       <Canvas
-        dpr={[1, 1.5]}
-        mode='concurrent'
-        camera={{
-          position: [0, 0, 100],
-          fov: 120,
-          near: 0.1,
-          far: 1000,
+        gl={{ antialias: true, alpha: false }}
+        onCreated={({ gl }) => {
+          gl.setClearColor('white');
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.outputEncoding = THREE.sRGBEncoding;
         }}
       >
         <ambientLight intensity={0.8} />
         <pointLight position={[-10, 10, 10]} />
-        {/* <Scene /> */}
-        <Model />
-        <OrbitControls />
+        <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
       </Canvas>
+      <UI handleReturn={handleReturn} />
     </Background>
   );
 };
