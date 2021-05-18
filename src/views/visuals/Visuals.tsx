@@ -113,8 +113,23 @@ const Camera = () => {
 const Scene = ({ reset }): JSX.Element => {
   const vec = new THREE.Vector3();
   const [selection, selectionSet] = useState();
+  const [hover, hoverSet] = useState({});
+  const [blockHover, blockHoverSet] = useState(true);
+  useEffect(() => {
+    if (selection) {
+      hoverSet(false);
+      blockHoverSet(false);
+    }
+  }, [selection]);
+
   const handleSelection = (input) => {
     selectionSet(input);
+  };
+  const handleMouseHover = (input) => {
+    hoverSet({ shp: { id: input.current.uuid, hover: true } });
+  };
+  const handleMouseOut = (input) => {
+    hoverSet({ shp: { id: input.current.uuid, hover: false } });
   };
   const focus = -10;
   const [fragRef, fragRefSet] = useState([]);
@@ -146,7 +161,14 @@ const Scene = ({ reset }): JSX.Element => {
           <Cover imageURL={'trump.jpg'} position={[0, 0, 100]} />
           <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 100]} />
         </group> */}
-        <Fragments ref={fragRef} handleSelection={handleSelection} />
+        <Fragments
+          ref={fragRef}
+          handleSelection={handleSelection}
+          handleMouseHover={handleMouseHover}
+          handleMouseOut={handleMouseOut}
+          hover={hover}
+          blockHover={blockHover}
+        />
         {/* <OrbitControls /> */}
       </Suspense>
     </>
@@ -155,9 +177,6 @@ const Scene = ({ reset }): JSX.Element => {
 
 const Visuals = (): JSX.Element => {
   const [reset, resetSet] = useState(false);
-  const handleReturn = () => {
-    resetSet(true);
-  };
   return (
     <Background>
       <Canvas
@@ -172,7 +191,7 @@ const Visuals = (): JSX.Element => {
         <pointLight position={[-10, 10, 10]} />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
       </Canvas>
-      <UI handleReturn={handleReturn} />
+      {/* <UI handleReturn={handleReturn} /> */}
     </Background>
   );
 };
