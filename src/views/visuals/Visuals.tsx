@@ -16,13 +16,15 @@ import {
   OrbitControls,
   useHelper,
   PerspectiveCamera,
+  meshBounds,
 } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
 import { Background } from './Styles';
-import Fragments from '../fragments';
+import Fragments from '../../components/fragments';
 import UI from '../ui';
+import BackgroundNodes from '../../components/backgroundNodes';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -61,39 +63,6 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
     </>
   );
 };
-
-function UnusedNodes({ count = 4000 }) {
-  const positions = useMemo(() => {
-    let positions = [];
-    for (let i = 0; i < count; i++) {
-      const r = 4000;
-      const theta = 2 * Math.PI * Math.random();
-      const phi = Math.acos(2 * Math.random() - 1);
-      const x =
-        r * Math.cos(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
-      const y =
-        r * Math.sin(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
-      const z = -700;
-      positions.push(x);
-      positions.push(y);
-      positions.push(z);
-    }
-    return new Float32Array(positions);
-  }, [count]);
-  return (
-    <points>
-      <bufferGeometry>
-        <bufferAttribute
-          attachObject={['attributes', 'position']}
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial size={3} sizeAttenuation color='white' fog={false} />
-    </points>
-  );
-}
 
 const Camera = () => {
   const camera = useRef();
@@ -169,6 +138,7 @@ const Scene = ({ reset }): JSX.Element => {
           hover={hover}
           blockHover={blockHover}
         />
+        <BackgroundNodes />
         {/* <OrbitControls /> */}
       </Suspense>
     </>
@@ -180,15 +150,14 @@ const Visuals = (): JSX.Element => {
   return (
     <Background>
       <Canvas
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: true, alpha: true }}
         onCreated={({ gl }) => {
-          gl.setClearColor('white');
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.outputEncoding = THREE.sRGBEncoding;
         }}
       >
-        <ambientLight intensity={0.8} />
-        <pointLight position={[-10, 10, 10]} />
+        <color args={['#f0f0ff']} attach='background' />
+        <ambientLight />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
       </Canvas>
       {/* <UI handleReturn={handleReturn} /> */}

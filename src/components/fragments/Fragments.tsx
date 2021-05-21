@@ -3,6 +3,8 @@ import React, { useEffect, forwardRef, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import useVideo from '../../hooks/useVideo';
+import InfoText from '../text';
+import { useFrame } from '@react-three/fiber';
 
 const videos: { url: string }[] = [
   { url: '/test.mp4' },
@@ -10,21 +12,11 @@ const videos: { url: string }[] = [
   { url: '/hmmm.mp4' },
 ];
 
-// interface FragTypes {
-//   handleSelection: () => void;
-//   handleMouseHover: () => void;
-//   handleMouseOut: () => void;
-//   hover: {
-//     id: string[];
-//     hover: boolean;
-//   };
-// }
-
 const Fragments = forwardRef(
   (
     { handleSelection, handleMouseHover, handleMouseOut, hover, blockHover },
     ref
-  ): FragTypes => {
+  ) => {
     const offset = 7;
     const video = useVideo(videos);
     useEffect(() => void video[0].play(), [video]);
@@ -42,6 +34,13 @@ const Fragments = forwardRef(
       []
     );
     const hoverValidation = Object.keys(hover).length !== 0;
+    useFrame(() => {
+      data.forEach((d, index) => {
+        if (ref[index] !== undefined) {
+          ref[index].current.rotation.y += (0.1 + d[0]) / 100;
+        }
+      });
+    });
     return (
       <>
         {data.map((d, index) => (
@@ -56,17 +55,23 @@ const Fragments = forwardRef(
               blockHover ? () => handleMouseHover(ref[index]) : null
             }
             onPointerOut={blockHover ? () => handleMouseOut(ref[index]) : null}
+            scale={
+              hoverValidation &&
+              hover.shp.id === ref[index].current.uuid &&
+              hover.shp.hover
+                ? 0.5
+                : 0.3
+            }
           >
+            {hoverValidation &&
+            hover.shp.id === ref[index].current.uuid &&
+            hover.shp.hover ? (
+              <InfoText />
+            ) : null}
+
             <mesh
               castShadow
               receiveShadow
-              scale={
-                hoverValidation &&
-                hover.shp.id === ref[index].current.uuid &&
-                hover.shp.hover
-                  ? 0.5
-                  : 0.3
-              }
               geometry={nodes.Cube.geometry}
               material={materials.Material}
             >
