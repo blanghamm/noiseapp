@@ -139,6 +139,12 @@ const Scene = ({ reset }): JSX.Element => {
           blockHover={blockHover}
         />
         <BackgroundNodes />
+        <BackgroundNodes />
+        <BackgroundNodes />
+        <BackgroundNodes />
+        <BackgroundNodes />
+        <BackgroundNodes />
+
         {/* <OrbitControls /> */}
       </Suspense>
     </>
@@ -156,7 +162,7 @@ const Visuals = (): JSX.Element => {
           gl.outputEncoding = THREE.sRGBEncoding;
         }}
       >
-        <color args={['#f0f0ff']} attach='background' />
+        <color args={['black']} attach='background' />
         <ambientLight />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
       </Canvas>

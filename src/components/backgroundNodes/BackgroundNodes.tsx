@@ -2,14 +2,16 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 
+const colArr = ['#de004e', '#860029', '#321450', '#29132e'];
+
 const BackgroundNodes = ({ count = 4000 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const sizes = useMemo(() => {
     const r = 40;
     const theta = 2 * Math.PI * Math.random();
     const phi = Math.acos(2 * Math.random() - 1);
-    return new Array(50)
-      .fill(50)
+    return new Array(500)
+      .fill(500)
       .map(() => [
         Math.abs(
           r * Math.cos(theta) * Math.sin(phi) +
@@ -19,10 +21,10 @@ const BackgroundNodes = ({ count = 4000 }) => {
           r * Math.sin(theta) * Math.sin(phi) +
             (-20 + Math.random() * 40) / 1000
         ),
-        -700,
+        Math.abs(r * Math.sin(theta) * Math.random() * 20) / 2,
       ]);
   }, []);
-  console.log(sizes);
+
   useEffect(() => {
     const scratchObject3D = new THREE.Object3D();
     for (let i = 0; i < count; i++) {
@@ -33,7 +35,7 @@ const BackgroundNodes = ({ count = 4000 }) => {
         r * Math.cos(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
       const y =
         r * Math.sin(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
-      const z = -700;
+      const z = -500;
       scratchObject3D.position.set(x, y, z);
       scratchObject3D.updateMatrix();
       instMesh.current.setMatrixAt(i, scratchObject3D.matrix);
@@ -43,13 +45,9 @@ const BackgroundNodes = ({ count = 4000 }) => {
   return (
     <instancedMesh ref={instMesh} args={[null, null, count]}>
       {sizes.map((size, index) => (
-        <boxBufferGeometry
-          key={index}
-          attach='geometry'
-          args={size}
-        ></boxBufferGeometry>
+        <boxBufferGeometry key={index} attach='geometry' args={size} />
       ))}
-      <meshBasicMaterial attach='material' color='white' />
+      <meshBasicMaterial attach='material' color={colArr[0]} />
     </instancedMesh>
   );
 };
