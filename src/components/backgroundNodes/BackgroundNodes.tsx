@@ -1,20 +1,20 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo } from "react";
-import * as THREE from "three";
-import niceColors from "nice-color-palettes";
+import React, { useRef, useEffect, useMemo } from 'react';
+import * as THREE from 'three';
+import niceColors from 'nice-color-palettes';
 
-const colArr = new Array(4000)
+const colArr = new Array(400)
   .fill()
-  .map(() => niceColors[40][Math.floor(Math.random() * 5)]);
+  .map(() => niceColors[10][Math.floor(Math.random() * 5)]);
 
 const tempColor = new THREE.Color();
 
-const BackgroundNodes = ({ count = 4000 }) => {
+const BackgroundNodes = ({ count = 400 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
-        new Array(4000)
+        new Array(400)
           .fill()
           .flatMap((_, i) => tempColor.set(colArr[i]).toArray())
       ),
@@ -61,7 +61,7 @@ const BackgroundNodes = ({ count = 4000 }) => {
       {sizes.map((size, index) => (
         <boxGeometry key={index} args={size}>
           <instancedBufferAttribute
-            attachObject={["attributes", "color"]}
+            attachObject={['attributes', 'color']}
             args={[colorArray, 3]}
           />
         </boxGeometry>

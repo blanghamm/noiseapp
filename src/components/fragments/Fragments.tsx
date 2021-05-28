@@ -69,12 +69,8 @@ const Fragments = forwardRef(
               <InfoText />
             ) : null}
 
-            <mesh
-              castShadow
-              receiveShadow
-              geometry={nodes.Cube.geometry}
-              material={materials.Material}
-            >
+            <mesh castShadow receiveShadow>
+              <boxBufferGeometry args={[10, 10, 10]} />
               <meshBasicMaterial color='pink'>
                 <videoTexture
                   attach='map'

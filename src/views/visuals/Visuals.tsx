@@ -10,13 +10,12 @@ import React, {
   useMemo,
 } from 'react';
 import * as THREE from 'three';
-import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import {
   Shadow,
   OrbitControls,
   useHelper,
   PerspectiveCamera,
-  meshBounds,
 } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
 import { VisualTypes } from './VisualTypes';
@@ -25,6 +24,7 @@ import { Background } from './Styles';
 import Fragments from '../../components/fragments';
 import UI from '../ui';
 import BackgroundNodes from '../../components/backgroundNodes';
+import Effects from '../../components/effects';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -139,11 +139,6 @@ const Scene = ({ reset }): JSX.Element => {
           blockHover={blockHover}
         />
         <BackgroundNodes />
-        <BackgroundNodes />
-        <BackgroundNodes />
-        <BackgroundNodes />
-        <BackgroundNodes />
-        <BackgroundNodes />
 
         {/* <OrbitControls /> */}
       </Suspense>
@@ -158,13 +153,14 @@ const Visuals = (): JSX.Element => {
       <Canvas
         gl={{ antialias: true, alpha: true }}
         onCreated={({ gl }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.outputEncoding = THREE.sRGBEncoding;
+          gl.toneMapping = THREE.LinearToneMapping;
         }}
       >
-        <color args={['white']} attach='background' />
+        <color args={['black']} attach='background' />
+        <fog attach='fog' args={['white', 300, 1000]} />
         <ambientLight />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
+        <Effects />
       </Canvas>
       {/* <UI handleReturn={handleReturn} /> */}
     </Background>
