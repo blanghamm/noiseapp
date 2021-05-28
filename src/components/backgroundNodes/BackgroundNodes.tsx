@@ -1,11 +1,11 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo } from 'react';
-import * as THREE from 'three';
-import niceColors from 'nice-color-palettes';
+import React, { useRef, useEffect, useMemo } from "react";
+import * as THREE from "three";
+import niceColors from "nice-color-palettes";
 
 const colArr = new Array(4000)
   .fill()
-  .map(() => niceColors[17][Math.floor(Math.random() * 5)]);
+  .map(() => niceColors[40][Math.floor(Math.random() * 5)]);
 
 const tempColor = new THREE.Color();
 
@@ -61,7 +61,7 @@ const BackgroundNodes = ({ count = 4000 }) => {
       {sizes.map((size, index) => (
         <boxGeometry key={index} args={size}>
           <instancedBufferAttribute
-            attachObject={['attributes', 'color']}
+            attachObject={["attributes", "color"]}
             args={[colorArray, 3]}
           />
         </boxGeometry>
