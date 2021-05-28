@@ -1,11 +1,25 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo } from 'react';
-import * as THREE from 'three';
+import React, { useRef, useEffect, useMemo } from "react";
+import * as THREE from "three";
+import niceColors from "nice-color-palettes";
 
-const colArr = ['#de004e', '#860029', '#321450', '#29132e'];
+const colArr = new Array(20)
+  .fill()
+  .map(() => niceColors[17][Math.floor(Math.random() * 5)]);
+
+const tempColor = new THREE.Color();
 
 const BackgroundNodes = ({ count = 4000 }) => {
   const instMesh = useRef<THREE.Mesh>();
+  const colorArray = useMemo(
+    () =>
+      Float32Array.from(
+        new Array(20)
+          .fill()
+          .flatMap((_, i) => tempColor.set(colArr[i]).toArray())
+      ),
+    []
+  );
   const sizes = useMemo(() => {
     const r = 40;
     const theta = 2 * Math.PI * Math.random();
@@ -45,9 +59,14 @@ const BackgroundNodes = ({ count = 4000 }) => {
   return (
     <instancedMesh ref={instMesh} args={[null, null, count]}>
       {sizes.map((size, index) => (
-        <boxBufferGeometry key={index} attach='geometry' args={size} />
+        <boxGeometry key={index} args={size}>
+          <instancedBufferAttribute
+            attachObject={["attributes", "color"]}
+            args={[colorArray, 3]}
+          />
+        </boxGeometry>
       ))}
-      <meshBasicMaterial attach='material' color={colArr[0]} />
+      <meshBasicMaterial vertexColors={THREE.VertexColors} />
     </instancedMesh>
   );
 };
