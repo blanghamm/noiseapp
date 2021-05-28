@@ -8,23 +8,23 @@ import React, {
   forwardRef,
   createRef,
   useMemo,
-} from "react";
-import * as THREE from "three";
-import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
+} from 'react';
+import * as THREE from 'three';
+import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
 import {
   Shadow,
   OrbitControls,
   useHelper,
   PerspectiveCamera,
   meshBounds,
-} from "@react-three/drei";
-import { animated as a, useSpring } from "@react-spring/three";
-import { VisualTypes } from "./VisualTypes";
-import { DoubleSide } from "three";
-import { Background } from "./Styles";
-import Fragments from "../../components/fragments";
-import UI from "../ui";
-import BackgroundNodes from "../../components/backgroundNodes";
+} from '@react-three/drei';
+import { animated as a, useSpring } from '@react-spring/three';
+import { VisualTypes } from './VisualTypes';
+import { DoubleSide } from 'three';
+import { Background } from './Styles';
+import Fragments from '../../components/fragments';
+import UI from '../ui';
+import BackgroundNodes from '../../components/backgroundNodes';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -44,7 +44,7 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
         <mesh scale={1} ref={mesh}>
           <planeGeometry args={[2.7, 3.54, 32, 32]} />
           <meshStandardMaterial
-            color={"white"}
+            color={'white'}
             map={unfriendedMap}
             map-minFilter={THREE.LinearFilter}
             transparent
@@ -66,7 +66,7 @@ const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
 
 const Camera = () => {
   const camera = useRef();
-  useHelper(camera, THREE.CameraHelper, 1, "cyan");
+  useHelper(camera, THREE.CameraHelper, 1, 'cyan');
   return (
     <PerspectiveCamera
       makeDefault={true}
@@ -162,7 +162,7 @@ const Visuals = (): JSX.Element => {
           gl.outputEncoding = THREE.sRGBEncoding;
         }}
       >
-        <color args={["white"]} attach="background" />
+        <color args={['white']} attach='background' />
         <ambientLight />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
       </Canvas>

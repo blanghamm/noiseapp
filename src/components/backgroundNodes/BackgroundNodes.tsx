@@ -1,9 +1,9 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo } from "react";
-import * as THREE from "three";
-import niceColors from "nice-color-palettes";
+import React, { useRef, useEffect, useMemo } from 'react';
+import * as THREE from 'three';
+import niceColors from 'nice-color-palettes';
 
-const colArr = new Array(20)
+const colArr = new Array(4000)
   .fill()
   .map(() => niceColors[17][Math.floor(Math.random() * 5)]);
 
@@ -14,7 +14,7 @@ const BackgroundNodes = ({ count = 4000 }) => {
   const colorArray = useMemo(
     () =>
       Float32Array.from(
-        new Array(20)
+        new Array(4000)
           .fill()
           .flatMap((_, i) => tempColor.set(colArr[i]).toArray())
       ),
@@ -61,12 +61,13 @@ const BackgroundNodes = ({ count = 4000 }) => {
       {sizes.map((size, index) => (
         <boxGeometry key={index} args={size}>
           <instancedBufferAttribute
-            attachObject={["attributes", "color"]}
+            attachObject={['attributes', 'color']}
             args={[colorArray, 3]}
           />
         </boxGeometry>
       ))}
-      <meshBasicMaterial vertexColors={THREE.VertexColors} />
+
+      <meshPhongMaterial vertexColors={THREE.VertexColors} />
     </instancedMesh>
   );
 };
