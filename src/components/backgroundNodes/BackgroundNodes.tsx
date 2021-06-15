@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import niceColors from 'nice-color-palettes';
 
@@ -11,6 +11,7 @@ const tempColor = new THREE.Color();
 
 const BackgroundNodes = ({ count = 400 }) => {
   const instMesh = useRef<THREE.Mesh>();
+  const lineMesh = useRef<THREE.Line>();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
@@ -20,12 +21,13 @@ const BackgroundNodes = ({ count = 400 }) => {
       ),
     []
   );
+  console.log(instMesh);
   const sizes = useMemo(() => {
     const r = 40;
     const theta = 2 * Math.PI * Math.random();
     const phi = Math.acos(2 * Math.random() - 1);
-    return new Array(500)
-      .fill(500)
+    return new Array(400)
+      .fill()
       .map(() => [
         Math.abs(
           r * Math.cos(theta) * Math.sin(phi) +
@@ -33,22 +35,18 @@ const BackgroundNodes = ({ count = 400 }) => {
         ),
         Math.abs(
           r * Math.sin(theta) * Math.sin(phi) +
-            (-20 + Math.random() * 40) / 1000
+            (-20 + Math.random() * 40) / 2000
         ),
-        Math.abs(r * Math.sin(theta) * Math.random() * 20) / 2,
+        Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
   }, []);
 
   useEffect(() => {
     const scratchObject3D = new THREE.Object3D();
     for (let i = 0; i < count; i++) {
-      const r = 4000;
       const theta = 2 * Math.PI * Math.random();
-      const phi = Math.acos(2 * Math.random() - 1);
-      const x =
-        r * Math.cos(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
-      const y =
-        r * Math.sin(theta) * Math.sin(phi) + (-2000 + Math.random() * 4000);
+      const x = 10 * Math.random() * Math.cos(theta) * 1000;
+      const y = 5 * Math.random() * Math.sin(theta) * 10;
       const z = -500;
       scratchObject3D.position.set(x, y, z);
       scratchObject3D.updateMatrix();
@@ -57,18 +55,28 @@ const BackgroundNodes = ({ count = 400 }) => {
     }
   }, [count]);
   return (
-    <instancedMesh ref={instMesh} args={[null, null, count]}>
-      {sizes.map((size, index) => (
-        <boxGeometry key={index} args={size}>
-          <instancedBufferAttribute
-            attachObject={['attributes', 'color']}
-            args={[colorArray, 3]}
+    <group>
+      <instancedMesh ref={instMesh} args={[null, null, count]}>
+        {sizes.map((size, index) => (
+          <boxGeometry key={index} args={size}>
+            <instancedBufferAttribute
+              attachObject={['attributes', 'color']}
+              args={[colorArray, 3]}
+            />
+          </boxGeometry>
+        ))}
+        <meshPhongMaterial vertexColors={THREE.VertexColors} />
+      </instancedMesh>
+      {/* <line ref={lineMesh}>
+        <lineBasicMaterial color={'#fffff'} linewidth={10} />
+        <bufferGeometry>
+          <bufferAttribute
+            attachObject={['attributes', 'positions']}
+            args={[sizes]}
           />
-        </boxGeometry>
-      ))}
-
-      <meshPhongMaterial vertexColors={THREE.VertexColors} />
-    </instancedMesh>
+        </bufferGeometry>
+      </line> */}
+    </group>
   );
 };
 

@@ -22,22 +22,24 @@ const Fragments = forwardRef(
     useEffect(() => void video[0].play(), [video]);
     useEffect(() => void video[1].play(), [video]);
     const { nodes, materials } = useGLTF('/main_shard.glb');
+    const theta = 2 * Math.PI * Math.random();
     const data = useMemo(
       () =>
         new Array(2)
           .fill(2)
           .map(() => [
-            Math.abs(0.9 + Math.random() * 9 - offset),
-            Math.abs(2 + Math.random() * 9 - offset),
-            -15,
+            10 * Math.random() * Math.cos(theta) * 2,
+            5 * Math.random() * Math.sin(theta) * 1.5,
+            -40,
           ]),
       []
     );
+    console.log('checking', data);
     const hoverValidation = Object.keys(hover).length !== 0;
     useFrame(() => {
       data.forEach((d, index) => {
         if (ref[index] !== undefined) {
-          ref[index].current.rotation.y += (0.1 + d[0]) / 100;
+          //ref[index].current.rotation.y += (0.1 + d[0]) / 100;
         }
       });
     });
