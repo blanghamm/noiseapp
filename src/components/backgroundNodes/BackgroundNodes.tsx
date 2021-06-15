@@ -1,6 +1,7 @@
 //@ts-nocheck
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
+import { Line } from '@react-three/drei';
 import niceColors from 'nice-color-palettes';
 
 const colArr = new Array(400)
@@ -12,6 +13,7 @@ const tempColor = new THREE.Color();
 const BackgroundNodes = ({ count = 400 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const lineMesh = useRef<THREE.Line>();
+  const [positions, positionsSet] = useState([]);
   const colorArray = useMemo(
     () =>
       Float32Array.from(
@@ -21,7 +23,6 @@ const BackgroundNodes = ({ count = 400 }) => {
       ),
     []
   );
-  console.log(instMesh);
   const sizes = useMemo(() => {
     const r = 40;
     const theta = 2 * Math.PI * Math.random();
@@ -40,20 +41,40 @@ const BackgroundNodes = ({ count = 400 }) => {
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
   }, []);
+  // const linePositions = useMemo(() => {
+  //   const arr = [];
+  //   for (let i = 0; i < count; i++) {
+  //     const theta = 2 * Math.PI * Math.random();
+  //     const x = 10 * Math.random() * Math.cos(theta) * 1000;
+  //     const y = 5 * Math.random() * Math.sin(theta) * 10;
+  //     const z = -50;
+  //     arr.push(x);
+  //     arr.push(y);
+  //     arr.push(z);
+  //   }
+  //   return new Array(arr);
+  // }, []);
 
   useEffect(() => {
     const scratchObject3D = new THREE.Object3D();
+    const newArr = [];
     for (let i = 0; i < count; i++) {
       const theta = 2 * Math.PI * Math.random();
       const x = 10 * Math.random() * Math.cos(theta) * 1000;
       const y = 5 * Math.random() * Math.sin(theta) * 10;
       const z = -500;
+      newArr.push(x);
+      newArr.push(y);
+      newArr.push(z);
       scratchObject3D.position.set(x, y, z);
       scratchObject3D.updateMatrix();
       instMesh.current.setMatrixAt(i, scratchObject3D.matrix);
       instMesh.current.instanceMatrix.needsUpdate = true;
     }
+    positionsSet([...positions, ...newArr]);
   }, [count]);
+  console.log(positions);
+
   return (
     <group>
       <instancedMesh ref={instMesh} args={[null, null, count]}>
@@ -67,15 +88,7 @@ const BackgroundNodes = ({ count = 400 }) => {
         ))}
         <meshPhongMaterial vertexColors={THREE.VertexColors} />
       </instancedMesh>
-      {/* <line ref={lineMesh}>
-        <lineBasicMaterial color={'#fffff'} linewidth={10} />
-        <bufferGeometry>
-          <bufferAttribute
-            attachObject={['attributes', 'positions']}
-            args={[sizes]}
-          />
-        </bufferGeometry>
-      </line> */}
+      {/* <Line points={positions} color='white' lineWidth={0.1} /> */}
     </group>
   );
 };
