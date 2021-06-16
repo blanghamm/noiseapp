@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useRef, useEffect, useMemo, useState } from 'react';
+import React, { useRef, useLayoutEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import niceColors from 'nice-color-palettes';
@@ -13,7 +13,7 @@ const tempColor = new THREE.Color();
 const BackgroundNodes = ({ count = 400 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const lineMesh = useRef<THREE.Line>();
-  const [positions, positionsSet] = useState([]);
+  const [positions, positionsSet] = useState();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
@@ -41,39 +41,25 @@ const BackgroundNodes = ({ count = 400 }) => {
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
   }, []);
-  // const linePositions = useMemo(() => {
-  //   const arr = [];
-  //   for (let i = 0; i < count; i++) {
-  //     const theta = 2 * Math.PI * Math.random();
-  //     const x = 10 * Math.random() * Math.cos(theta) * 1000;
-  //     const y = 5 * Math.random() * Math.sin(theta) * 10;
-  //     const z = -50;
-  //     arr.push(x);
-  //     arr.push(y);
-  //     arr.push(z);
-  //   }
-  //   return new Array(arr);
-  // }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const scratchObject3D = new THREE.Object3D();
-    const newArr = [];
+    const pos = [];
     for (let i = 0; i < count; i++) {
       const theta = 2 * Math.PI * Math.random();
       const x = 10 * Math.random() * Math.cos(theta) * 1000;
       const y = 5 * Math.random() * Math.sin(theta) * 10;
       const z = -500;
-      newArr.push(x);
-      newArr.push(y);
-      newArr.push(z);
+      pos.push(x, y, z);
       scratchObject3D.position.set(x, y, z);
       scratchObject3D.updateMatrix();
       instMesh.current.setMatrixAt(i, scratchObject3D.matrix);
       instMesh.current.instanceMatrix.needsUpdate = true;
     }
-    positionsSet([...positions, ...newArr]);
+    if (pos.length !== 0) {
+      positionsSet([pos]);
+    }
   }, [count]);
-  console.log(positions);
 
   return (
     <group>
@@ -88,7 +74,9 @@ const BackgroundNodes = ({ count = 400 }) => {
         ))}
         <meshPhongMaterial vertexColors={THREE.VertexColors} />
       </instancedMesh>
-      {/* <Line points={positions} color='white' lineWidth={0.1} /> */}
+      {/* {positions && positions.length !== 0 ? (
+        <Line points={positions} color='white' lineWidth={0.1} />
+      ) : null} */}
     </group>
   );
 };

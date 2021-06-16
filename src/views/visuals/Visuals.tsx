@@ -27,6 +27,7 @@ import BackgroundNodes from '../../components/backgroundNodes';
 import Effects from '../../components/effects';
 import BackgroundPoints from '../../components/backgroundPoints';
 import BackgroundExtended from '../../components/backgroundExtended';
+import LineBackground from '../../components/lineBackground';
 
 const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
@@ -132,17 +133,18 @@ const Scene = ({ reset }): JSX.Element => {
           <Cover imageURL={'trump.jpg'} position={[0, 0, 100]} />
           <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 100]} />
         </group> */}
-        {/* <Fragments
+        <Fragments
           ref={fragRef}
           handleSelection={handleSelection}
           handleMouseHover={handleMouseHover}
           handleMouseOut={handleMouseOut}
           hover={hover}
           blockHover={blockHover}
-        /> */}
+        />
         <BackgroundNodes />
-        {/* <BackgroundPoints />
-        <BackgroundExtended /> */}
+        <BackgroundPoints />
+        <BackgroundExtended />
+        {/* <LineBackground /> */}
 
         {/* <OrbitControls /> */}
       </Suspense>
@@ -160,7 +162,7 @@ const Visuals = (): JSX.Element => {
           gl.toneMapping = THREE.LinearToneMapping;
         }}
       >
-        <fog attach='fog' args={['white', 300, 1000]} />
+        {/* <fog attach='fog' args={['white', 300, 1000]} /> */}
         <ambientLight />
         <pointLight intensity={1} color='orange' decay={2} />
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />

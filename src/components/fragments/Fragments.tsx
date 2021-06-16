@@ -25,15 +25,16 @@ const Fragments = forwardRef(
     const theta = 2 * Math.PI * Math.random();
     const data = useMemo(
       () =>
-        new Array(2)
-          .fill(2)
+        new Array(10)
+          .fill()
           .map(() => [
-            10 * Math.random() * Math.cos(theta) * 2,
-            5 * Math.random() * Math.sin(theta) * 1.5,
-            -40,
+            10 * Math.random() * Math.cos(theta) * 100,
+            5 * Math.random() * Math.sin(theta) * 10,
+            -500,
           ]),
       []
     );
+    console.log('frag data', data);
     console.log('checking', data);
     const hoverValidation = Object.keys(hover).length !== 0;
     useFrame(() => {
@@ -50,7 +51,6 @@ const Fragments = forwardRef(
             ref={ref[index]}
             key={index}
             dispose={null}
-            rotation={[0.2, 0, 0]}
             position={d}
             onClick={() => handleSelection(ref[index])}
             onPointerOver={
@@ -71,14 +71,14 @@ const Fragments = forwardRef(
               <InfoText />
             ) : null}
 
-            <mesh castShadow receiveShadow>
-              <boxBufferGeometry args={[10, 10, 10]} />
-              <meshBasicMaterial color='pink'>
-                <videoTexture
+            <mesh>
+              <boxBufferGeometry args={[134, 115, 211]} />
+              <meshBasicMaterial color='blue'>
+                {/* <videoTexture
                   attach='map'
                   args={[video[index] || [0]]}
                   wrapS={THREE.MirroredRepeatWrapping}
-                />
+                /> */}
               </meshBasicMaterial>
             </mesh>
           </group>
