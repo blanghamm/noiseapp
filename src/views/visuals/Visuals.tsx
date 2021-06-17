@@ -121,11 +121,11 @@ const Scene = ({ reset }): JSX.Element => {
       .map(() => [
         Math.abs(
           r * Math.cos(theta) * Math.sin(phi) +
-            (-20 + Math.random() * 40) / 1000
+          (-20 + Math.random() * 40) / 1000
         ),
         Math.abs(
           r * Math.sin(theta) * Math.sin(phi) +
-            (-20 + Math.random() * 40) / 2000
+          (-20 + Math.random() * 40) / 2000
         ),
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
@@ -134,13 +134,13 @@ const Scene = ({ reset }): JSX.Element => {
     reset
       ? camera.position.lerp(vec.set(0, 0, 0), 0.1)
       : camera.position.lerp(
-          vec.set(
-            selection ? selection.current.position.x : 0,
-            selection ? selection.current.position.y : 0,
-            selection ? focus : 0
-          ),
-          0.1
-        );
+        vec.set(
+          selection ? selection.current.position.x : 0,
+          selection ? selection.current.position.y : 0,
+          selection ? focus : 0
+        ),
+        0.1
+      );
   });
   return (
     <>
@@ -163,9 +163,6 @@ const Scene = ({ reset }): JSX.Element => {
         <BackgroundNodes sizes={sizes} />
         <BackgroundPoints />
         <BackgroundExtended />
-        {/* <LineBackground /> */}
-
-        {/* <OrbitControls /> */}
       </Suspense>
     </>
   );

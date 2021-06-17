@@ -32,9 +32,9 @@ const Fragments = forwardRef(
     const theta = 2 * Math.PI * Math.random();
     const data = useMemo(
       () =>
-        new Array(10)
+        new Array(3)
           .fill()
-          .map(() => [3 - Math.random() * 100, Math.random() * 4, -50]),
+          .map(() => [3 - Math.random() * 100 / offset, Math.random() * 4, -50]),
       []
     );
     console.log('frag data', data);
@@ -61,17 +61,17 @@ const Fragments = forwardRef(
             onPointerOut={blockHover ? () => handleMouseOut(ref[index]) : null}
             scale={
               hoverValidation &&
-              hover.shp.id === ref[index].current.uuid &&
-              hover.shp.hover
+                hover.shp.id === ref[index].current.uuid &&
+                hover.shp.hover
                 ? 1.5
                 : 1
             }
           >
             {hoverValidation &&
-            hover.shp.id === ref[index].current.uuid &&
-            hover.shp.hover ? (
-              <InfoText />
-            ) : null}
+              hover.shp.id === ref[index].current.uuid &&
+              hover.shp.hover ? (
+                <InfoText />
+              ) : null}
 
             <mesh>
               <boxBufferGeometry key={index} args={[5, 3, 4]} />
