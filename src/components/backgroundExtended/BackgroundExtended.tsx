@@ -9,7 +9,7 @@ const colArr = new Array(400)
 
 const tempColor = new THREE.Color();
 
-const BackgroundExtended = ({ count = 400 }) => {
+const BackgroundExtended = ({ count = 100 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const colorArray = useMemo(
     () =>

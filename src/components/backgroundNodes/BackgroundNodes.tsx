@@ -10,7 +10,7 @@ const colArr = new Array(400)
 
 const tempColor = new THREE.Color();
 
-const BackgroundNodes = ({ count = 400, sizes }) => {
+const BackgroundNodes = ({ count = 200, sizes }) => {
   const instMesh = useRef<THREE.Mesh>();
   const lineMesh = useRef<THREE.Line>();
   const colorArray = useMemo(

@@ -27,14 +27,22 @@ import BackgroundNodes from '../../components/backgroundNodes';
 import Effects from '../../components/effects';
 import BackgroundPoints from '../../components/backgroundPoints';
 import BackgroundExtended from '../../components/backgroundExtended';
-import LineBackground from '../../components/lineBackground';
+import ZoomFragment from '../../components/zoomFragment';
+import Title from '../../components/title';
 
-const Cover = ({ imageURL, position }: VisualTypes): JSX.Element => {
+const Cover = ({
+  imageURL,
+  position,
+  coverSelectSet,
+}: VisualTypes): JSX.Element => {
   const [unfriendedMap] = useLoader(THREE.TextureLoader, [imageURL]);
   const mesh = useRef<THREE.Mesh>(null!);
   const [active, activeSet] = useState(false);
   const [hover, hoverSet] = useState(false);
   const props = useSpring({ scale: hover ? 1.5 : 1 });
+  useEffect(() => {
+    coverSelectSet(active);
+  }, [active]);
   return (
     <>
       <a.group
@@ -85,8 +93,10 @@ const Camera = () => {
 const Scene = ({ reset }): JSX.Element => {
   const vec = new THREE.Vector3();
   const [selection, selectionSet] = useState();
+  const [show, showSet] = useState(false);
   const [hover, hoverSet] = useState({});
   const [blockHover, blockHoverSet] = useState(true);
+  const [coverSelect, coverSelectSet] = useState(false);
   useEffect(() => {
     if (selection) {
       hoverSet(false);
@@ -96,6 +106,7 @@ const Scene = ({ reset }): JSX.Element => {
 
   const handleSelection = (input) => {
     selectionSet(input);
+    showSet(!show);
   };
   const handleMouseHover = (input) => {
     hoverSet({ shp: { id: input.current.uuid, hover: true } });
@@ -103,7 +114,7 @@ const Scene = ({ reset }): JSX.Element => {
   const handleMouseOut = (input) => {
     hoverSet({ shp: { id: input.current.uuid, hover: false } });
   };
-  const focus = -10;
+  const focus = -30;
   const [fragRef, fragRefSet] = useState([]);
   useEffect(() => {
     fragRefSet((fragRef) =>
@@ -121,11 +132,11 @@ const Scene = ({ reset }): JSX.Element => {
       .map(() => [
         Math.abs(
           r * Math.cos(theta) * Math.sin(phi) +
-          (-20 + Math.random() * 40) / 1000
+            (-20 + Math.random() * 40) / 1000
         ),
         Math.abs(
           r * Math.sin(theta) * Math.sin(phi) +
-          (-20 + Math.random() * 40) / 2000
+            (-20 + Math.random() * 40) / 2000
         ),
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
@@ -134,35 +145,43 @@ const Scene = ({ reset }): JSX.Element => {
     reset
       ? camera.position.lerp(vec.set(0, 0, 0), 0.1)
       : camera.position.lerp(
-        vec.set(
-          selection ? selection.current.position.x : 0,
-          selection ? selection.current.position.y : 0,
-          selection ? focus : 0
-        ),
-        0.1
-      );
+          vec.set(
+            selection ? selection.current.position.x : 0,
+            selection ? selection.current.position.y : 0,
+            selection ? focus : 0
+          ),
+          0.1
+        );
   });
   return (
     <>
       <Suspense fallback={null}>
         <Camera />
-        {/* <group position={[0, 0, 0]}>
-          <Cover imageURL={'unfriended.jpg'} position={[-4, 0, 100]} />
-          <Cover imageURL={'trump.jpg'} position={[0, 0, 100]} />
-          <Cover imageURL={'fear-fury.jpg'} position={[4, 0, 100]} />
-        </group> */}
-        <Fragments
-          ref={fragRef}
-          handleSelection={handleSelection}
-          handleMouseHover={handleMouseHover}
-          handleMouseOut={handleMouseOut}
-          hover={hover}
-          blockHover={blockHover}
-          sizes={sizes}
-        />
-        <BackgroundNodes sizes={sizes} />
-        <BackgroundPoints />
-        <BackgroundExtended />
+
+        {coverSelect ? (
+          <group>
+            <Fragments
+              ref={fragRef}
+              handleSelection={handleSelection}
+              handleMouseHover={handleMouseHover}
+              handleMouseOut={handleMouseOut}
+              hover={hover}
+              blockHover={blockHover}
+              show={show}
+            />
+            <BackgroundNodes sizes={sizes} />
+            <BackgroundPoints />
+            <BackgroundExtended />
+          </group>
+        ) : (
+          <group position={[0, 0, 0]}>
+            <Cover
+              imageURL={'Palestine-Israel.png'}
+              position={[0, 0, -5]}
+              coverSelectSet={coverSelectSet}
+            />
+          </group>
+        )}
       </Suspense>
     </>
   );
@@ -196,6 +215,7 @@ const Visuals = (): JSX.Element => {
         {/* <pointLight intensity={1} color='orange' decay={2} /> */}
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
         <Effects />
+        <Title />
       </Canvas>
       {/* <UI handleReturn={handleReturn} /> */}
     </Background>
