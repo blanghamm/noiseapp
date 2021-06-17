@@ -3,6 +3,7 @@ import React, { useRef, useLayoutEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import niceColors from 'nice-color-palettes';
+import InfoText from '../text';
 
 const colArr = new Array(400)
   .fill()
@@ -12,7 +13,7 @@ const tempColor = new THREE.Color();
 
 const BackgroundNodes = ({ count = 200, sizes }) => {
   const instMesh = useRef<THREE.Mesh>();
-  const lineMesh = useRef<THREE.Line>();
+  const [positions, positionsSet] = useState();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
@@ -37,10 +38,11 @@ const BackgroundNodes = ({ count = 200, sizes }) => {
       instMesh.current.setMatrixAt(i, scratchObject3D.matrix);
       instMesh.current.instanceMatrix.needsUpdate = true;
     }
+    positionsSet(pos);
   }, [count]);
 
   return (
-    <group>
+    <group >
       <instancedMesh
         ref={instMesh}
         args={[null, null, count]}
@@ -57,9 +59,10 @@ const BackgroundNodes = ({ count = 200, sizes }) => {
         ))}
         <meshPhongMaterial vertexColors={THREE.VertexColors} />
       </instancedMesh>
-      {/* {positions && positions.length !== 0 ? (
+      {positions && positions.length !== 0 ? (
         <Line points={positions} color='white' lineWidth={0.1} />
-      ) : null} */}
+      ) : null}
+
     </group>
   );
 };

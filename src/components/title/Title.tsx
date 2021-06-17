@@ -2,7 +2,9 @@
 import React from 'react';
 import { Html } from '@react-three/drei';
 import { EffectComposer, Glitch } from '@react-three/postprocessing';
-import { GlitchMode, BlendFunction } from 'postprocessing';
+import {
+  GlitchMode
+} from 'postprocessing';
 
 const Title = () => {
   return (
@@ -17,14 +19,16 @@ const Title = () => {
           mode={GlitchMode.SPORADIC}
         />
       </EffectComposer>
+
       <Html style={{ color: 'white', top: 0, left: 0 }}>
         <h1>Noise</h1>
-        <p>
+        <p style={{ fontSize: '10px' }}>
           Noise is a three js app looking at the removal of narrative techniques
           within new articles. A combination of the chaotic nature and noise
           that surrounds news daily
         </p>
       </Html>
+
     </>
   );
 };

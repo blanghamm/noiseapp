@@ -10,7 +10,9 @@ const colArr = new Array(400)
 const tempColor = new THREE.Color();
 
 const BackgroundExtended = ({ count = 100 }) => {
+
   const instMesh = useRef<THREE.Mesh>();
+  console.log(instMesh);
   const colorArray = useMemo(
     () =>
       Float32Array.from(

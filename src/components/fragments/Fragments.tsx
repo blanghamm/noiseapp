@@ -6,7 +6,7 @@ import useVideo from '../../hooks/useVideo';
 import InfoText from '../text';
 import ZoomFragment from '../../components/zoomFragment';
 
-const videos: { url: string }[] = [{ url: '/test.mp4' }];
+const videos: { url: string }[] = [{ url: 'videos/israel-clip4.mp4' }];
 
 const Fragments = forwardRef(
   (
@@ -21,8 +21,8 @@ const Fragments = forwardRef(
     ref
   ) => {
     const offset = 7;
-    const video = useVideo(videos);
-    useEffect(() => void video[0].play(), [video]);
+    const vid = useVideo(videos);
+    // useEffect(() => void vid[0].play(), [vid]);
     const data = useMemo(
       () =>
         new Array(1)
@@ -53,17 +53,17 @@ const Fragments = forwardRef(
               }
             >
               {hoverValidation &&
-              hover.shp.id === ref[index].current.uuid &&
-              hover.shp.hover ? (
-                <InfoText news={ref[index].current.uuid} />
-              ) : null}
+                hover.shp.id === ref[index].current.uuid &&
+                hover.shp.hover ? (
+                  <InfoText news={ref[index].current.uuid} />
+                ) : null}
 
               <mesh>
-                <boxBufferGeometry key={index} args={[5, 3, 4]} />
-                <meshBasicMaterial color='blue'>
+                <boxBufferGeometry key={index} args={[19.2, 10.8, 10]} />
+                <meshBasicMaterial>
                   <videoTexture
                     attach='map'
-                    args={[video[index] || [0]]}
+                    args={[vid[index] || [0]]}
                     wrapS={THREE.MirroredRepeatWrapping}
                   />
                 </meshBasicMaterial>

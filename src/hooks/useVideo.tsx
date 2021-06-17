@@ -7,11 +7,12 @@ const useVideo = (source: { url: string }[]) => {
       vid.src = thi.url;
       vid.crossOrigin = 'Anonymous';
       vid.loop = true;
-      vid.muted = true;
+      vid.muted = false;
       return vid;
     })
   );
   return sourceArr;
 };
+
 
 export default useVideo;
