@@ -6,7 +6,7 @@ import useVideo from '../../hooks/useVideo';
 import InfoText from '../text';
 import ZoomFragment from '../../components/zoomFragment';
 
-const videos: { url: string }[] = [{ url: 'videos/israel-clip4.mp4' }];
+const videos: { url: string }[] = [{ url: 'videos/Main-Clip.mp4' }];
 
 const Fragments = forwardRef(
   (
@@ -22,7 +22,7 @@ const Fragments = forwardRef(
   ) => {
     const offset = 7;
     const vid = useVideo(videos);
-    // useEffect(() => void vid[0].play(), [vid]);
+    useEffect(() => void vid[0].play(), [vid]);
     const data = useMemo(
       () =>
         new Array(1)
@@ -58,7 +58,7 @@ const Fragments = forwardRef(
                   <InfoText news={ref[index].current.uuid} />
                 ) : null}
 
-              <mesh>
+              <mesh scale={0.4}>
                 <boxBufferGeometry key={index} args={[19.2, 10.8, 10]} />
                 <meshBasicMaterial>
                   <videoTexture

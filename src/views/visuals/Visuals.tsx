@@ -29,6 +29,7 @@ import BackgroundPoints from '../../components/backgroundPoints';
 import BackgroundExtended from '../../components/backgroundExtended';
 import ZoomFragment from '../../components/zoomFragment';
 import Title from '../../components/title';
+import InfoText from '../../components/text'
 
 const Cover = ({
   imageURL,
@@ -80,7 +81,6 @@ const Camera = () => {
   // useHelper(camera, THREE.CameraHelper, 1, 'cyan');
   return (
     <PerspectiveCamera
-      // makeDefault={true}
       fov={75}
       position={[0, 0, 50]}
       ref={camera}
@@ -181,6 +181,7 @@ const Scene = ({ reset, mouse }): JSX.Element => {
                 coverSelectSet={coverSelectSet}
               />
               <Title />
+
             </group>
           )}
 
@@ -217,7 +218,6 @@ const Visuals = (): JSX.Element => {
         {/* <pointLight intensity={1} color='orange' decay={2} /> */}
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
         <Effects />
-
       </Canvas>
     </Background>
   );

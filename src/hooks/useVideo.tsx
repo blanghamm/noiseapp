@@ -7,7 +7,7 @@ const useVideo = (source: { url: string }[]) => {
       vid.src = thi.url;
       vid.crossOrigin = 'Anonymous';
       vid.loop = true;
-      vid.muted = false;
+      vid.muted = true;
       return vid;
     })
   );

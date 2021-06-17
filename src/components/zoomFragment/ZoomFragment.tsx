@@ -2,19 +2,18 @@
 import React, { useMemo, useEffect } from 'react';
 import useVideo from '../../hooks/useVideo'
 import { MirroredRepeatWrapping, ClampToEdgeWrapping } from 'three'
-import { useFrame } from '@react-three/fiber';
+import Title from '../title';
 
 const radius = 200;
 const radian_interval = (2 * Math.PI) / 10;
 
-const videos: { url: string }[] = [{ url: 'videos/israel-airstrike.mp4' }, { url: 'videos/israel-clip1.mp4' }, { url: 'videos/israel-clip2.mp4' }]
+const videos: { url: string }[] = [{ url: 'videos/Second-Clip.mp4' }, { url: 'videos/Thrid-Clip.mp4' }]
 
 const ZoomFragments = () => {
   const vid = useVideo(videos);
   console.log(vid);
-  // useEffect(() => void vid[0].play(), [vid]);
-  // useEffect(() => void vid[1].play(), [vid]);
-  // useEffect(() => void vid[2].play(), [vid]);
+  useEffect(() => void vid[0].play(), [vid]);
+  useEffect(() => void vid[1].play(), [vid]);
   const positions = useMemo(
     () =>
       new Array(vid.length)
