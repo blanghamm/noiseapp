@@ -3,7 +3,6 @@ import React, { useRef, useLayoutEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import niceColors from 'nice-color-palettes';
-import InfoText from '../text';
 
 const colArr = new Array(400)
   .fill()

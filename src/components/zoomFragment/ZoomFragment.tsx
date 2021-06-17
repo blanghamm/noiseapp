@@ -1,8 +1,7 @@
 //@ts-nocheck
 import React, { useMemo, useEffect } from 'react';
 import useVideo from '../../hooks/useVideo'
-import { MirroredRepeatWrapping, ClampToEdgeWrapping } from 'three'
-import Title from '../title';
+import { ClampToEdgeWrapping } from 'three'
 
 const radius = 200;
 const radian_interval = (2 * Math.PI) / 10;
@@ -23,7 +22,7 @@ const ZoomFragments = () => {
           Math.sin(radian_interval * i) * radius,
           -400,
         ]),
-    []
+    [vid.length]
   );
   return (
     <>

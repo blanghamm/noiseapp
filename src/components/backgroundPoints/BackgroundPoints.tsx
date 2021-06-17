@@ -18,7 +18,7 @@ const BackgroundPoints = ({ count = 200 }) => {
           .fill()
           .flatMap((_, i) => tempColor.set(colArr[i]).toArray())
       ),
-    []
+    [count]
   );
   const sizes = useMemo(() => {
     const r = 40;
@@ -30,7 +30,7 @@ const BackgroundPoints = ({ count = 200 }) => {
         2,
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
-  }, []);
+  }, [count]);
 
   useEffect(() => {
     const scratchObject3D = new THREE.Object3D();

@@ -5,7 +5,6 @@ import React, {
   useState,
   useRef,
   useEffect,
-  useCallback,
   createRef,
   useMemo,
 } from 'react';
@@ -13,8 +12,6 @@ import * as THREE from 'three';
 import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import {
   Shadow,
-  OrbitControls,
-  useHelper,
   PerspectiveCamera,
 } from '@react-three/drei';
 import { animated as a, useSpring } from '@react-spring/three';
@@ -22,14 +19,11 @@ import { VisualTypes } from './VisualTypes';
 import { DoubleSide } from 'three';
 import { Background } from './Styles';
 import Fragments from '../../components/fragments';
-import UI from '../ui';
 import BackgroundNodes from '../../components/backgroundNodes';
 import Effects from '../../components/effects';
 import BackgroundPoints from '../../components/backgroundPoints';
 import BackgroundExtended from '../../components/backgroundExtended';
-import ZoomFragment from '../../components/zoomFragment';
 import Title from '../../components/title';
-import InfoText from '../../components/text'
 
 const Cover = ({
   imageURL,
@@ -43,7 +37,7 @@ const Cover = ({
   const props = useSpring({ scale: hover ? 1.5 : 1 });
   useEffect(() => {
     coverSelectSet(active);
-  }, [active]);
+  }, [active, coverSelectSet]);
   return (
     <>
       <a.group

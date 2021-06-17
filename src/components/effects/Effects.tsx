@@ -62,9 +62,9 @@ function Post() {
     composer.addPass(normalPass);
     composer.addPass(effectPass);
     return composer;
-  }, []);
+  }, [camera, gl, scene, smaa]);
 
-  useEffect(() => void composer.setSize(size.width, size.height), [size]);
+  useEffect(() => void composer.setSize(size.width, size.height), [size, composer]);
   return useFrame((_, delta) => composer.render(delta), 1);
 }
 
