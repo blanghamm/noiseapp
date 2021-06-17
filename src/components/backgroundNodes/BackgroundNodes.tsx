@@ -10,10 +10,9 @@ const colArr = new Array(400)
 
 const tempColor = new THREE.Color();
 
-const BackgroundNodes = ({ count = 400 }) => {
+const BackgroundNodes = ({ count = 400, sizes }) => {
   const instMesh = useRef<THREE.Mesh>();
   const lineMesh = useRef<THREE.Line>();
-  const [positions, positionsSet] = useState();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
@@ -23,24 +22,6 @@ const BackgroundNodes = ({ count = 400 }) => {
       ),
     []
   );
-  const sizes = useMemo(() => {
-    const r = 40;
-    const theta = 2 * Math.PI * Math.random();
-    const phi = Math.acos(2 * Math.random() - 1);
-    return new Array(400)
-      .fill()
-      .map(() => [
-        Math.abs(
-          r * Math.cos(theta) * Math.sin(phi) +
-            (-20 + Math.random() * 40) / 1000
-        ),
-        Math.abs(
-          r * Math.sin(theta) * Math.sin(phi) +
-            (-20 + Math.random() * 40) / 2000
-        ),
-        Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
-      ]);
-  }, []);
 
   useLayoutEffect(() => {
     const scratchObject3D = new THREE.Object3D();
@@ -56,14 +37,16 @@ const BackgroundNodes = ({ count = 400 }) => {
       instMesh.current.setMatrixAt(i, scratchObject3D.matrix);
       instMesh.current.instanceMatrix.needsUpdate = true;
     }
-    if (pos.length !== 0) {
-      positionsSet([pos]);
-    }
   }, [count]);
 
   return (
     <group>
-      <instancedMesh ref={instMesh} args={[null, null, count]}>
+      <instancedMesh
+        ref={instMesh}
+        args={[null, null, count]}
+        castShadow
+        receiveShadow
+      >
         {sizes.map((size, index) => (
           <boxGeometry key={index} args={size}>
             <instancedBufferAttribute

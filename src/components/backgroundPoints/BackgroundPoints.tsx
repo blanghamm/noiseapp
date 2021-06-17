@@ -9,12 +9,12 @@ const colArr = new Array(400)
 
 const tempColor = new THREE.Color();
 
-const BackgroundPoints = ({ count = 400 }) => {
+const BackgroundPoints = ({ count = 800 }) => {
   const instMesh = useRef<THREE.Mesh>();
   const colorArray = useMemo(
     () =>
       Float32Array.from(
-        new Array(400)
+        new Array(count)
           .fill()
           .flatMap((_, i) => tempColor.set(colArr[i]).toArray())
       ),
@@ -23,7 +23,7 @@ const BackgroundPoints = ({ count = 400 }) => {
   const sizes = useMemo(() => {
     const r = 40;
     const theta = 2 * Math.PI;
-    return new Array(400)
+    return new Array(count)
       .fill()
       .map(() => [
         50,
@@ -46,7 +46,12 @@ const BackgroundPoints = ({ count = 400 }) => {
     }
   }, [count]);
   return (
-    <instancedMesh ref={instMesh} args={[null, null, count]}>
+    <instancedMesh
+      ref={instMesh}
+      args={[null, null, count]}
+      castShadow
+      receiveShadow
+    >
       {sizes.map((size, index) => (
         <boxGeometry key={index} args={size}>
           <instancedBufferAttribute

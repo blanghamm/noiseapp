@@ -112,6 +112,24 @@ const Scene = ({ reset }): JSX.Element => {
         .map((_, i) => fragRef[i] || createRef())
     );
   }, []);
+  const sizes = useMemo(() => {
+    const r = 40;
+    const theta = 2 * Math.PI * Math.random();
+    const phi = Math.acos(2 * Math.random() - 1);
+    return new Array(400)
+      .fill()
+      .map(() => [
+        Math.abs(
+          r * Math.cos(theta) * Math.sin(phi) +
+            (-20 + Math.random() * 40) / 1000
+        ),
+        Math.abs(
+          r * Math.sin(theta) * Math.sin(phi) +
+            (-20 + Math.random() * 40) / 2000
+        ),
+        Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
+      ]);
+  }, []);
   useFrame(({ camera }) => {
     reset
       ? camera.position.lerp(vec.set(0, 0, 0), 0.1)
@@ -140,8 +158,9 @@ const Scene = ({ reset }): JSX.Element => {
           handleMouseOut={handleMouseOut}
           hover={hover}
           blockHover={blockHover}
+          sizes={sizes}
         />
-        <BackgroundNodes />
+        <BackgroundNodes sizes={sizes} />
         <BackgroundPoints />
         <BackgroundExtended />
         {/* <LineBackground /> */}
@@ -162,9 +181,22 @@ const Visuals = (): JSX.Element => {
           gl.toneMapping = THREE.LinearToneMapping;
         }}
       >
-        {/* <fog attach='fog' args={['white', 300, 1000]} /> */}
-        <ambientLight />
-        <pointLight intensity={1} color='orange' decay={2} />
+        <fog attach='fog' args={['teal', 25, 1000]} />
+        <color attach='background' args={['black']} />
+        <directionalLight
+          position={[50, 50, 25]}
+          angle={0.3}
+          intensity={2}
+          castShadow
+          shadow-mapSize-width={64}
+          shadow-mapSize-height={64}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+        />
+        <directionalLight position={[-10, -10, -5]} intensity={0.5} />
+        {/* <pointLight intensity={1} color='orange' decay={2} /> */}
         <Scene position={[0, 0, 20]} reset={reset} resetSet={resetSet} />
         <Effects />
       </Canvas>

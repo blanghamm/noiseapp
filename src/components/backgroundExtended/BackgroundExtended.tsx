@@ -27,7 +27,7 @@ const BackgroundExtended = ({ count = 400 }) => {
       .fill()
       .map(() => [
         50,
-        8,
+        2,
         Math.abs(r * Math.sin(theta) * Math.random() * 20) / 10,
       ]);
   }, []);
@@ -46,7 +46,12 @@ const BackgroundExtended = ({ count = 400 }) => {
     }
   }, [count]);
   return (
-    <instancedMesh ref={instMesh} args={[null, null, count]}>
+    <instancedMesh
+      ref={instMesh}
+      args={[null, null, count]}
+      castShadow
+      receiveShadow
+    >
       {sizes.map((size, index) => (
         <boxGeometry key={index} args={size}>
           <instancedBufferAttribute

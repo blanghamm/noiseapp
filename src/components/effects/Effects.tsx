@@ -1,32 +1,77 @@
 //@ts-nocheck
-import React from 'react';
-
+import React, { Suspense, useMemo, useEffect } from 'react';
+import { useLoader, useThree, useFrame } from '@react-three/fiber';
 import {
+  SMAAImageLoader,
+  BlendFunction,
   EffectComposer,
-  Noise,
-  Vignette,
-  Glitch,
-  ChromaticAberration,
-} from '@react-three/postprocessing';
-import { GlitchMode, BlendFunction } from 'postprocessing';
+  EffectPass,
+  RenderPass,
+  SMAAEffect,
+  SSAOEffect,
+  NormalPass,
+  BloomEffect,
+} from 'postprocessing';
+import { HalfFloatType } from 'three';
 
-export default function Effects() {
+function Post() {
+  const { gl, scene, camera, size } = useThree();
+  const smaa = useLoader(SMAAImageLoader);
+  const composer = useMemo(() => {
+    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType });
+    composer.addPass(new RenderPass(scene, camera));
+    const SMAA = new SMAAEffect(...smaa);
+    SMAA.colorEdgesMaterial.setEdgeDetectionThreshold(0.1);
+    const normalPass = new NormalPass(scene, camera);
+    const aOconfig = {
+      blendFunction: BlendFunction.MULTIPLY,
+      samples: 3, // May get away with less samples
+      rings: 4, // Just make sure this isn't a multiple of samples
+      distanceThreshold: 0.4,
+      distanceFalloff: 0.5,
+      rangeThreshold: 0.5, // Controls sensitivity based on camera view distance **
+      rangeFalloff: 0.01,
+      luminanceInfluence: 0.6,
+      radius: 2, // Spread range
+      intensity: 5,
+      bias: 0.5,
+    };
+    const AO = new SSAOEffect(
+      camera,
+      normalPass.renderTarget.texture,
+      aOconfig
+    );
+    const CAO = new SSAOEffect(camera, normalPass.renderTarget.texture, {
+      ...aOconfig,
+      samples: 21,
+      radius: 7,
+      intensity: 30,
+      luminanceInfluence: 0.6,
+      // new in postprocessing@6.16.0
+      color: 'red',
+    });
+    const BLOOM = new BloomEffect({
+      opacity: 1,
+      blendFunction: BlendFunction.SCREEN,
+      kernelSize: 2,
+      luminanceThreshold: 0.8,
+      luminanceSmoothing: 0.0,
+    });
+    const effectPass = new EffectPass(camera, SMAA, CAO, AO, BLOOM);
+    effectPass.renderToScreen = true;
+    composer.addPass(normalPass);
+    composer.addPass(effectPass);
+    return composer;
+  }, []);
+
+  useEffect(() => void composer.setSize(size.width, size.height), [size]);
+  return useFrame((_, delta) => composer.render(delta), 1);
+}
+
+export default function Effect() {
   return (
-    <EffectComposer>
-      <Glitch
-        active
-        ratio={0.05}
-        delay={[0.2, 10]}
-        strength={[0.03, 0.1]}
-        duration={[0.2, 0.3]}
-        mode={GlitchMode.SPORADIC}
-      />
-      {/* <ChromaticAberration
-        blendFunction={BlendFunction.ADD}
-        offset={[0.0002, 0.003]}
-      /> */}
-      <Noise opacity={0.02} />
-      <Vignette eskil={false} offset={0.1} darkness={1.1} />
-    </EffectComposer>
+    <Suspense fallback={null}>
+      <Post />
+    </Suspense>
   );
 }

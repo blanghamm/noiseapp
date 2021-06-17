@@ -14,7 +14,14 @@ const videos: { url: string }[] = [
 
 const Fragments = forwardRef(
   (
-    { handleSelection, handleMouseHover, handleMouseOut, hover, blockHover },
+    {
+      handleSelection,
+      handleMouseHover,
+      handleMouseOut,
+      hover,
+      blockHover,
+      sizes,
+    },
     ref
   ) => {
     const offset = 7;
@@ -27,15 +34,10 @@ const Fragments = forwardRef(
       () =>
         new Array(10)
           .fill()
-          .map(() => [
-            10 * Math.random() * Math.cos(theta) * 100,
-            5 * Math.random() * Math.sin(theta) * 10,
-            -500,
-          ]),
+          .map(() => [3 - Math.random() * 100, Math.random() * 4, -50]),
       []
     );
     console.log('frag data', data);
-    console.log('checking', data);
     const hoverValidation = Object.keys(hover).length !== 0;
     useFrame(() => {
       data.forEach((d, index) => {
@@ -61,8 +63,8 @@ const Fragments = forwardRef(
               hoverValidation &&
               hover.shp.id === ref[index].current.uuid &&
               hover.shp.hover
-                ? 0.5
-                : 0.3
+                ? 1.5
+                : 1
             }
           >
             {hoverValidation &&
@@ -72,7 +74,7 @@ const Fragments = forwardRef(
             ) : null}
 
             <mesh>
-              <boxBufferGeometry args={[134, 115, 211]} />
+              <boxBufferGeometry key={index} args={[5, 3, 4]} />
               <meshBasicMaterial color='blue'>
                 {/* <videoTexture
                   attach='map'
